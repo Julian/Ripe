@@ -30,7 +30,7 @@ class Node(object):
 
 class CompoundStatement(Node):
     def __init__(self, statements):
-        self.statements = statements
+        self.statements = list(statements)
 
 
 class Statement(Node):
@@ -61,9 +61,9 @@ class Transformer(object):
         return Statement(self.visit_expr(node.children[0]))
 
     def visit_expr(self, node):
-        return self.visit_primary(node.children[0].children[0])
+        return self.visit_literal(node.children[0].children[0])
 
-    def visit_primary(self, node):
+    def visit_literal(self, node):
         return Int(self.visit_numeric_literal(node.children[0].children[0]))
 
     def visit_numeric_literal(self, node):

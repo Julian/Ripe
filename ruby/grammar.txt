@@ -7,22 +7,22 @@ compound_statement: statement
 statement: expression
            ;
 
-expression: arg
+expression: <arg>
             ;
 
-arg: primary
+arg: <primary>
      ;
 
-primary:  literal | variable;
+primary:  <literal> | <variable>;
 
-literal: numeric_literal
+literal: <numeric_literal>
          ;
 
-numeric_literal: signed_number | unsigned_number;
+numeric_literal: <signed_number> | <unsigned_number>;
 
 ADDOP: "[+-]";
 
-signed_number: <ADDOP> unsigned_number;
+signed_number: ADDOP unsigned_number;
 
 unsigned_number: <integer_literal>;
 
