@@ -64,7 +64,23 @@ class Transformer(object):
         return self.visit_primary(node.children[0].children[0])
 
     def visit_primary(self, node):
-        chnode = node.children[0].children[0].children[0].children[0].children[0]
+        return Int(self.visit_numeric_literal(node.children[0].children[0]))
+
+    def visit_numeric_literal(self, node):
+        chnode = node.children[0]
+        if chnode.symbol == "signed_number":
+            return self.visit_signed_number(chnode)
+        return self.visit_unsigned_number(chnode)
+
+    def visit_signed_number(self, node):
+        sign, number_node = node.children
+        number = self.visit_unsigned_number(number_node)
+        if sign.additional_info == "-":
+            number = number * -1
+        return number
+
+    def visit_unsigned_number(self, node):
+        chnode = node.children[0].children[0]
         value = chnode.additional_info
 
         if value.startswith(("0b", "0B", "0d", "0D")):
@@ -81,7 +97,7 @@ class Transformer(object):
         else:
             raise ValueError
 
-        return Int(int(value, base))
+        return int(value, base)
 
 
 transformer = Transformer()

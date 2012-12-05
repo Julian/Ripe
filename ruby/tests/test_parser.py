@@ -25,6 +25,20 @@ class TestInteger(TestCase):
             CompoundStatement([Statement(Int(123454321))])
         )
 
+    def test_positive(self):
+        source = "+13"
+        self.assertEqual(
+            parse(source),
+            CompoundStatement([Statement(Int(13))])
+        )
+
+    def test_negative(self):
+        source = "-13"
+        self.assertEqual(
+            parse(source),
+            CompoundStatement([Statement(Int(-13))])
+        )
+
     def test_dec(self):
         source = "0d12"
         self.assertEqual(

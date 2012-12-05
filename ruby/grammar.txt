@@ -20,9 +20,9 @@ literal: numeric_literal
 
 numeric_literal: signed_number | unsigned_number;
 
-addop: "+" | "-";
+ADDOP: "[+-]";
 
-signed_number: >addop< unsigned_number;
+signed_number: <ADDOP> unsigned_number;
 
 unsigned_number: <integer_literal>;
 
@@ -36,7 +36,7 @@ DECIMAL_INTEGER_LITERAL: "(0[dD])?[0-9]*";
 
 BINARY_INTEGER_LITERAL: "0[bB][01]+";
 
-OCTAL_INTEGER_LITERAL: "(0[_oO])?[0-7]*";
+OCTAL_INTEGER_LITERAL: "(0[_oO0])?[0-7]*";
 
 HEX_INTEGER_LITERAL: "0[xX][0-9a-fA-F]+";
 
