@@ -1,14 +1,16 @@
-main: compound_statement [EOF]
-      ;
+# 10.1
+program : statements EOF
+        ;
 
-compound_statement: statement
-                    ;
-
-statement: expression
+# 10.2
+statements : statement >statements<?
            ;
 
-expression: <arg>
-            ;
+statement  : expression
+           ;
+
+expression : <arg>
+           ;
 
 arg: <primary>
      ;

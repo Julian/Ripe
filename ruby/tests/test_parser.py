@@ -1,15 +1,30 @@
 from unittest import TestCase
 
+from pypy.rlib.parsing.parsing import ParseError
+from pypy.rlib.parsing.deterministic import LexerError
+
 from ruby import parser
-from ruby.parser import CompoundStatement, Statement, Int, Name
+from ruby.parser import CompoundStatement, Statement, Int, Name, SingleQString
 
 
 class ParserTestMixin(object):
     def assertParses(self, source, *statement_nodes):
+        try:
+            parsed = parser.parse(source)
+        except ParseError as e:
+            self.fail(e.nice_error_message(__file__, source))
+        except LexerError as e:
+            self.fail(e.nice_error_message(__file__))
+
         self.assertEqual(
             parser.parse(source),
             CompoundStatement(Statement(node) for node in statement_nodes)
         )
+
+
+# class TestEmpty(TestCase):
+#     def test_empty_program(self):
+#         self.assertEqual(parser.parse(""), CompoundStatement([]))
 
 
 class TestInteger(TestCase, ParserTestMixin):
@@ -39,3 +54,7 @@ class TestInteger(TestCase, ParserTestMixin):
 
     def test_hex(self):
         self.assertParses("0x1af", Int(0x1af))
+
+
+class TestString(TestCase, ParserTestMixin):
+    pass

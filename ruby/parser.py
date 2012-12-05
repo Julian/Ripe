@@ -47,12 +47,13 @@ class Int(Node):
         self.value = value
 
 
-class BinOp(Node):
-    pass
+class SingleQString(Node):
+    def __init__(self, value):
+        self.value = value
 
 
 class Transformer(object):
-    def visit_main(self, node):
+    def visit_program(self, node):
         return CompoundStatement(
             [self.visit_statement(node.children[0].children[0])]
         )
@@ -109,4 +110,4 @@ def parse(source, transformer=transformer):
 
     """
 
-    return transformer.visit_main(_parse(source))
+    return transformer.visit_program(_parse(source))
