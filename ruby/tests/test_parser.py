@@ -64,6 +64,14 @@ class TestInteger(TestCase, ParserTestMixin):
     def test_hex(self):
         self.assertParses("0x1af", Int(0x1af))
 
+    def test_multiple_integers(self):
+        source = dedent("""
+        12
+        0B10111
+        0O172
+        """)
+        self.assertParses(source, Int(12), Int(0b10111), Int(0o172))
+
 
 class TestString(TestCase, ParserTestMixin):
     def test_empty_single(self):
@@ -83,13 +91,13 @@ class TestAssignment(TestCase, ParserTestMixin):
     def test_single_assignment(self):
         self.assertParses("x = 12", Assign(Variable("x"), Int(12)))
 
-    #def test_a_bunch_of_single_assignments(self):
-    #    source = dedent("""
-    #    x = 12
-    #    y = 'foo'
-    #    """)
-    #    self.assertParses(
-    #        source,
-    #        Assign(Variable("x"), Int(12)),
-    #        Assign(Variable("y"), SingleQString("foo"))
-    #    )
+    def test_a_bunch_of_single_assignments(self):
+        source = dedent("""
+        x = 12
+        y = 'foo'
+        """)
+        self.assertParses(
+            source,
+            Assign(Variable("x"), Int(12)),
+            Assign(Variable("y"), SingleQString("foo"))
+        )

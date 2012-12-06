@@ -65,15 +65,21 @@ class DoubleQString(Node):
 
 
 class Transformer(object):
+    def _gather_statements(self, star):
+        while len(star.children) == 2:
+            child, star = star.children
+            yield self.visit_statement(child)
+        yield self.visit_statement(star.children[0])
+
     def visit_program(self, node):
         # XXX: Some statements and then EOF, not sure why I can't remove the
         #      EOF and just get a list of statements with >statements*<
         if len(node.children) < 2:
             statements = []
         else:
-            statements = node.children[0].children
+            statements = self._gather_statements(node.children[0])
 
-        return CompoundStatement(self.visit_statement(s) for s in statements)
+        return CompoundStatement(statements)
 
     def visit_statement(self, node):
         chnode, = node.children
