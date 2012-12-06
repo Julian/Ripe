@@ -1,25 +1,18 @@
 # 10.1
-program : statements EOF
-        ;
+program : statement* [EOF];
 
-# 10.2
-statements : statement >statements<?
-           ;
-
+# 12
 statement  : expression
            ;
 
-expression : <arg>
-           ;
+expression : <literal> | <variable>;
 
-arg: <primary>
-     ;
+# 8.7.6
+literal : <numeric_literal>
+        | <string_literal>
+        ;
 
-primary:  <literal> | <variable>;
-
-literal: <numeric_literal>
-         ;
-
+# 8.7.6.2
 numeric_literal: <signed_number> | <unsigned_number>;
 
 ADDOP: "[+-]";
@@ -41,6 +34,15 @@ BINARY_INTEGER_LITERAL: "0[bB][01]+";
 OCTAL_INTEGER_LITERAL: "(0[_oO0])?[0-7]*";
 
 HEX_INTEGER_LITERAL: "0[xX][0-9a-fA-F]+";
+
+# 8.7.6.3
+string_literal : <SINGLE_QUOTED_STRING>
+               | <DOUBLE_QUOTED_STRING>
+               ;
+
+SINGLE_QUOTED_STRING : "'.*'";
+
+DOUBLE_QUOTED_STRING : "\".*\"";
 
 variable: identifier
           ;

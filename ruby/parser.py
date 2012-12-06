@@ -52,20 +52,28 @@ class SingleQString(Node):
         self.value = value
 
 
+class DoubleQString(Node):
+    def __init__(self, value):
+        self.value = value
+
+
 class Transformer(object):
     def visit_program(self, node):
-        return CompoundStatement(
-            [self.visit_statement(node.children[0].children[0])]
-        )
+        statements = node.children[0].children
+        return CompoundStatement(self.visit_statement(s) for s in statements)
 
     def visit_statement(self, node):
-        return Statement(self.visit_expr(node.children[0]))
+        return Statement(self.visit_expression(node.children[0]))
 
-    def visit_expr(self, node):
-        return self.visit_literal(node.children[0].children[0])
+    def visit_expression(self, node):
+        return self.visit_literal(node.children[0])
 
     def visit_literal(self, node):
-        return Int(self.visit_numeric_literal(node.children[0].children[0]))
+        chnode = node.children[0]
+        if chnode.symbol == "numeric_literal":
+            return Int(self.visit_numeric_literal(chnode))
+        elif chnode.symbol == "string_literal":
+            return self.visit_string_literal(chnode)
 
     def visit_numeric_literal(self, node):
         chnode = node.children[0]
@@ -99,6 +107,14 @@ class Transformer(object):
             raise ValueError
 
         return int(value, base)
+
+    def visit_string_literal(self, node):
+        chnode = node.children[0]
+        value = chnode.additional_info[1:-1]
+
+        if chnode.symbol == "SINGLE_QUOTED_STRING":
+            return SingleQString(value)
+        return DoubleQString(value)
 
 
 transformer = Transformer()

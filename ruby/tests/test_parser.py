@@ -4,7 +4,9 @@ from pypy.rlib.parsing.parsing import ParseError
 from pypy.rlib.parsing.deterministic import LexerError
 
 from ruby import parser
-from ruby.parser import CompoundStatement, Statement, Int, Name, SingleQString
+from ruby.parser import (
+    CompoundStatement, Statement, Int, SingleQString, DoubleQString,
+)
 
 
 class ParserTestMixin(object):
@@ -57,4 +59,14 @@ class TestInteger(TestCase, ParserTestMixin):
 
 
 class TestString(TestCase, ParserTestMixin):
-    pass
+    def test_empty_single(self):
+        self.assertParses("''", SingleQString(""))
+
+    def test_foo_single(self):
+        self.assertParses("'foo'", SingleQString("foo"))
+
+    def test_empty_double(self):
+        self.assertParses('""', DoubleQString(""))
+
+    def test_foo_double(self):
+        self.assertParses('"foo"', DoubleQString("foo"))
