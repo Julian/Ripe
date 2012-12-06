@@ -1,4 +1,4 @@
-IGNORE : " ";
+IGNORE : "[ \t\n]";
 
 # 10.1
 program : statement* [EOF];

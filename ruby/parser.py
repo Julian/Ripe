@@ -66,7 +66,13 @@ class DoubleQString(Node):
 
 class Transformer(object):
     def visit_program(self, node):
-        statements = node.children[0].children
+        # XXX: Some statements and then EOF, not sure why I can't remove the
+        #      EOF and just get a list of statements with >statements*<
+        if len(node.children) < 2:
+            statements = []
+        else:
+            statements = node.children[0].children
+
         return CompoundStatement(self.visit_statement(s) for s in statements)
 
     def visit_statement(self, node):

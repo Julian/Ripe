@@ -1,3 +1,4 @@
+from textwrap import dedent
 from unittest import TestCase
 
 from pypy.rlib.parsing.parsing import ParseError
@@ -30,9 +31,9 @@ class ParserTestMixin(object):
         )
 
 
-# class TestEmpty(TestCase):
-#     def test_empty_program(self):
-#         self.assertEqual(parser.parse(""), CompoundStatement([]))
+class TestEmpty(TestCase):
+    def test_empty_program(self):
+        self.assertEqual(parser.parse(""), CompoundStatement([]))
 
 
 class TestInteger(TestCase, ParserTestMixin):
@@ -81,3 +82,14 @@ class TestString(TestCase, ParserTestMixin):
 class TestAssignment(TestCase, ParserTestMixin):
     def test_single_assignment(self):
         self.assertParses("x = 12", Assign(Variable("x"), Int(12)))
+
+    #def test_a_bunch_of_single_assignments(self):
+    #    source = dedent("""
+    #    x = 12
+    #    y = 'foo'
+    #    """)
+    #    self.assertParses(
+    #        source,
+    #        Assign(Variable("x"), Int(12)),
+    #        Assign(Variable("y"), SingleQString("foo"))
+    #    )
