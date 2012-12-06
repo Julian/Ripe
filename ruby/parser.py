@@ -38,8 +38,15 @@ class Statement(Node):
         self.expr = expr
 
 
-class Name(Node):
-    pass
+class Assign(Node):
+    def __init__(self, name, obj):
+        self.name = name
+        self.obj = obj
+
+
+class Variable(Node):
+    def __init__(self, name):
+        self.name = name
 
 
 class Int(Node):
@@ -63,10 +70,27 @@ class Transformer(object):
         return CompoundStatement(self.visit_statement(s) for s in statements)
 
     def visit_statement(self, node):
-        return Statement(self.visit_expression(node.children[0]))
+        chnode, = node.children
+        if chnode.symbol == "expression":
+            expr = self.visit_expression(chnode)
+        elif chnode.symbol == "assignment_statement":
+            expr = self.visit_assign(chnode)
+        return Statement(expr)
 
     def visit_expression(self, node):
-        return self.visit_literal(node.children[0])
+        chnode, = node.children
+        if chnode.symbol == "literal":
+            return self.visit_literal(chnode)
+        elif chnode.symbol == "assignment_statement":
+            return self.visit_assign(chnode)
+
+    def visit_assign(self, node):
+        assignment = node.children[0].children[0]
+        # XXX: Why doesn't this work with ["="] in the grammar?
+        name, _, obj = assignment.children
+        # XXX: Why doesn't the variable get substituted by the identifier?
+        name, obj = name.children[0].additional_info, obj.children[0]
+        return Assign(Variable(name), self.visit_expression(obj))
 
     def visit_literal(self, node):
         chnode = node.children[0]

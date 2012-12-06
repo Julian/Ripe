@@ -5,7 +5,13 @@ from pypy.rlib.parsing.deterministic import LexerError
 
 from ruby import parser
 from ruby.parser import (
-    CompoundStatement, Statement, Int, SingleQString, DoubleQString,
+    Assign,
+    CompoundStatement,
+    DoubleQString,
+    Int,
+    Variable,
+    SingleQString,
+    Statement,
 )
 
 
@@ -70,3 +76,8 @@ class TestString(TestCase, ParserTestMixin):
 
     def test_foo_double(self):
         self.assertParses('"foo"', DoubleQString("foo"))
+
+
+class TestAssignment(TestCase, ParserTestMixin):
+    def test_single_assignment(self):
+        self.assertParses("x = 12", Assign(Variable("x"), Int(12)))
