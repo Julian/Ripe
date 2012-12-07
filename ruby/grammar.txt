@@ -12,8 +12,8 @@ separator : ";"
           ;
 
 # 12.1
-statement  : <expression_statement>
-           | <assignment_statement>
+statement  : <assignment_statement>
+           | <expression_statement>
            ;
 
 # 11.5.1
@@ -21,6 +21,7 @@ expression_statement : expression
                      ;
 
 expression : <equality_expression>
+           | <variable>
            | <literal>
            ;
 
@@ -35,7 +36,6 @@ BINOP      : "(==)"
 # 8.7.6
 literal : <numeric_literal>
         | <string_literal>
-        | <boolean_literal>
         ;
 
 # 8.7.6.2
@@ -69,9 +69,6 @@ string_literal : SINGLE_QUOTED_STRING
 SINGLE_QUOTED_STRING : "'.*'";
 
 DOUBLE_QUOTED_STRING : "\".*\"";
-
-# 11.5.4.8
-boolean_literal : "true" | "false";
 
 # 11.4.2
 assignment : assignment_expression
@@ -112,8 +109,12 @@ method_invocation_without_parentheses : expression
 operator_expression : assignment_expression
                     ;
 
-variable : <IDENTIFIER>
+variable : IDENTIFIER
+         | PSEUDO_VARIABLE
          ;
+
+# 11.5.4.8.1
+PSEUDO_VARIABLE : "(nil)|(true)|(false)|(self)";
 
 IDENTIFIER: "[a-zA-Z_$][a-zA-Z_0-9]*"
             ;

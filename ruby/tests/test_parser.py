@@ -98,12 +98,22 @@ class TestString(TestCase, ParserTestMixin):
         self.assertParses('"foo"', DoubleQString("foo"))
 
 
-# class TestBoolean(TestCase, ParserTestMixin):
-#     def test_true(self):
-#         self.assertParses("true", Bool(True))
-# 
-#     def test_false(self):
-#         self.assertParses("false", Bool(False))
+class TestPseudoVariables(TestCase, ParserTestMixin):
+
+    # TODO: Right now these aren't special. Maybe they will be.
+    surround = Expression
+
+    def test_true(self):
+        self.assertParses("true", Variable("true"))
+
+    def test_false(self):
+        self.assertParses("false", Variable("false"))
+
+    def test_nil(self):
+        self.assertParses("nil", Variable("nil"))
+
+    def test_self(self):
+        self.assertParses("self", Variable("self"))
 
 
 class TestAssignment(TestCase, ParserTestMixin):

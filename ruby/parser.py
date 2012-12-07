@@ -94,9 +94,9 @@ class Transformer(object):
         return Expression(self.visit(expression))
 
     def visit_assignment_statement(self, node):
-        name, obj = node.children[0].children[0].children
+        variable, obj = node.children[0].children[0].children
         obj, = obj.children
-        return Assign(Variable(name.additional_info), self.visit(obj))
+        return Assign(self.visit(variable), self.visit(obj))
 
     def visit_numeric_literal(self, node):
         number = self.visit(node.children[-1])
@@ -135,6 +135,10 @@ class Transformer(object):
         elif string.symbol == "DOUBLE_QUOTED_STRING":
             return DoubleQString(value)
         raise NotImplementedError
+
+    def visit_variable(self, node):
+        name, = node.children
+        return Variable(name.additional_info)
 
     def visit_equality_expression(self, node):
         left, op, right = node.children
