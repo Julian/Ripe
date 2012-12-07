@@ -7,6 +7,7 @@ from pypy.rlib.parsing.deterministic import LexerError
 from ruby import parser
 from ruby.parser import (
     Assign,
+    BinOp,
     CompoundStatement,
     DoubleQString,
     Int,
@@ -101,3 +102,14 @@ class TestAssignment(TestCase, ParserTestMixin):
             Assign(Variable("x"), Int(12)),
             Assign(Variable("y"), SingleQString("foo"))
         )
+
+
+class TestBinOp(TestCase, ParserTestMixin):
+    def test_add_ints(self):
+        self.assertParses("2 + 6", BinOp(Int(2), "+", Int(6)))
+
+    def test_subtract_ints(self):
+        self.assertParses("1 - 0b101", BinOp(Int(1), "-", Int(0b101)))
+
+    # def test_add_int_to_var(self):
+    #     self.assertParses("1 - foo", BinOp(Int(1), "-", Variable("foo")))

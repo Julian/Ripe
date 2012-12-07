@@ -49,6 +49,13 @@ class Variable(Node):
         self.name = name
 
 
+class BinOp(Node):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
+
+
 class Int(Node):
     def __init__(self, value):
         self.value = value
@@ -91,10 +98,7 @@ class Transformer(object):
 
     def visit_expression(self, node):
         chnode, = node.children
-        if chnode.symbol == "literal":
-            return self.visit_literal(chnode)
-        elif chnode.symbol == "assignment_statement":
-            return self.visit_assign(chnode)
+        return getattr(self, "visit_%s" % chnode.symbol)(chnode)
 
     def visit_assign(self, node):
         assignment = node.children[0].children[0]
@@ -151,6 +155,13 @@ class Transformer(object):
         if chnode.symbol == "SINGLE_QUOTED_STRING":
             return SingleQString(value)
         return DoubleQString(value)
+
+    def visit_equality_expression(self, node):
+        left, op, right = node.children
+        op = op.children[0].additional_info
+        return BinOp(
+            self.visit_literal(left), op, self.visit_expression(right)
+        )
 
 
 transformer = Transformer()

@@ -8,7 +8,18 @@ statement  : expression
            | assignment_statement
            ;
 
-expression : <literal>;
+# 11.5.1
+expression : <equality_expression>
+           | <literal>
+           ;
+
+equality_expression : literal binary_op expression
+                    ;
+
+binary_op  : <BINOP> | <ADDOP>;
+
+BINOP      : "(==)"
+           ;
 
 # 8.7.6
 literal : <numeric_literal>
@@ -16,7 +27,9 @@ literal : <numeric_literal>
         ;
 
 # 8.7.6.2
-numeric_literal: <signed_number> | <unsigned_number>;
+numeric_literal : <signed_number>
+                | <unsigned_number>
+                ;
 
 ADDOP: "[+-]";
 
