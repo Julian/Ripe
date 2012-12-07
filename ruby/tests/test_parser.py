@@ -7,17 +7,21 @@ from pypy.rlib.parsing.deterministic import LexerError
 from ruby import parser
 from ruby.parser import (
     Assign,
+    Bool,
     BinOp,
-    CompoundStatement,
     DoubleQString,
+    Expression,
     Int,
+    Program,
     Variable,
     SingleQString,
-    Statement,
 )
 
 
 class ParserTestMixin(object):
+    def surround(self, node):
+        return node
+
     def assertParses(self, source, *statement_nodes):
         try:
             parsed = parser.parse(source)
@@ -28,16 +32,19 @@ class ParserTestMixin(object):
 
         self.assertEqual(
             parser.parse(source),
-            CompoundStatement(Statement(node) for node in statement_nodes)
+            Program(self.surround(value) for value in statement_nodes)
         )
 
 
 class TestEmpty(TestCase):
     def test_empty_program(self):
-        self.assertEqual(parser.parse(""), CompoundStatement([]))
+        self.assertEqual(parser.parse(""), Program())
 
 
 class TestInteger(TestCase, ParserTestMixin):
+
+    surround = Expression
+
     def test_zero(self):
         self.assertParses("0", Int(0))
 
@@ -69,12 +76,15 @@ class TestInteger(TestCase, ParserTestMixin):
         source = dedent("""
         12
         0B10111
-        0O172
+        00172
         """)
         self.assertParses(source, Int(12), Int(0b10111), Int(0o172))
 
 
 class TestString(TestCase, ParserTestMixin):
+
+    surround = Expression
+
     def test_empty_single(self):
         self.assertParses("''", SingleQString(""))
 
@@ -86,6 +96,14 @@ class TestString(TestCase, ParserTestMixin):
 
     def test_foo_double(self):
         self.assertParses('"foo"', DoubleQString("foo"))
+
+
+# class TestBoolean(TestCase, ParserTestMixin):
+#     def test_true(self):
+#         self.assertParses("true", Bool(True))
+# 
+#     def test_false(self):
+#         self.assertParses("false", Bool(False))
 
 
 class TestAssignment(TestCase, ParserTestMixin):
@@ -105,6 +123,9 @@ class TestAssignment(TestCase, ParserTestMixin):
 
 
 class TestBinOp(TestCase, ParserTestMixin):
+
+    surround = Expression
+
     def test_add_ints(self):
         self.assertParses("2 + 6", BinOp(Int(2), "+", Int(6)))
 

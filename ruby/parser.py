@@ -28,12 +28,12 @@ class Node(object):
         return "<%s %s>" % (self.__class__.__name__, ", ".join(contents))
 
 
-class CompoundStatement(Node):
-    def __init__(self, statements):
+class Program(Node):
+    def __init__(self, statements=()):
         self.statements = list(statements)
 
 
-class Statement(Node):
+class Expression(Node):
     def __init__(self, expr):
         self.expr = expr
 
@@ -61,6 +61,11 @@ class Int(Node):
         self.value = value
 
 
+class Bool(Node):
+    def __init__(self, value):
+        self.value = value
+
+
 class SingleQString(Node):
     def __init__(self, value):
         self.value = value
@@ -72,54 +77,47 @@ class DoubleQString(Node):
 
 
 class Transformer(object):
-    def _gather_statements(self, star):
-        while len(star.children) == 2:
-            child, star = star.children
-            yield self.visit_statement(child)
-        yield self.visit_statement(star.children[0])
+    def visit(self, node):
+        return getattr(self, "visit_%s" % node.symbol)(node)
 
     def visit_program(self, node):
-        # XXX: Some statements and then EOF, not sure why I can't remove the
-        #      EOF and just get a list of statements with >statements*<
-        if len(node.children) < 2:
-            statements = []
-        else:
-            statements = self._gather_statements(node.children[0])
+        if not node.children:
+            return Program()
 
-        return CompoundStatement(statements)
+        statements_node, = node.children
+        statements = statements_node.children
 
-    def visit_statement(self, node):
-        chnode, = node.children
-        if chnode.symbol == "expression":
-            expr = self.visit_expression(chnode)
-        elif chnode.symbol == "assignment_statement":
-            expr = self.visit_assign(chnode)
-        return Statement(expr)
+        return Program(self.visit(statement) for statement in statements)
 
-    def visit_expression(self, node):
-        chnode, = node.children
-        return getattr(self, "visit_%s" % chnode.symbol)(chnode)
+    def visit_expression_statement(self, node):
+        expression, = node.children
+        return Expression(self.visit(expression))
 
-    def visit_assign(self, node):
-        assignment = node.children[0].children[0]
-        # XXX: Why doesn't this work with ["="] in the grammar?
-        name, _, obj = assignment.children
-        # XXX: Why doesn't the variable get substituted by the identifier?
-        name, obj = name.children[0].additional_info, obj.children[0]
-        return Assign(Variable(name), self.visit_expression(obj))
-
-    def visit_literal(self, node):
-        chnode = node.children[0]
-        if chnode.symbol == "numeric_literal":
-            return Int(self.visit_numeric_literal(chnode))
-        elif chnode.symbol == "string_literal":
-            return self.visit_string_literal(chnode)
+    def visit_assignment_statement(self, node):
+        name, obj = node.children[0].children[0].children
+        obj, = obj.children
+        return Assign(Variable(name.additional_info), self.visit(obj))
 
     def visit_numeric_literal(self, node):
-        chnode = node.children[0]
-        if chnode.symbol == "signed_number":
-            return self.visit_signed_number(chnode)
-        return self.visit_unsigned_number(chnode)
+        number = self.visit(node.children[-1])
+
+        if len(node.children) != 1:
+            sign, _ = node.children
+            sign = 1 if not sign.additional_info.count("-") % 2 else -1
+            number.value *= sign
+
+        return number
+
+    def visit_integer_literal(self, node):
+        integer, = node.children
+        base = integer.symbol.partition("_")[0]
+
+        value = integer.additional_info
+        value = value[2:] if value.startswith("0") and value != "0" else value
+
+        bases = {"BINARY" : 2, "OCTAL" : 8, "DECIMAL" : 10, "HEX" : 16}
+
+        return Int(int(value, bases[base]))
 
     def visit_signed_number(self, node):
         sign, number_node = node.children
@@ -128,40 +126,19 @@ class Transformer(object):
             number = number * -1
         return number
 
-    def visit_unsigned_number(self, node):
-        chnode = node.children[0].children[0]
-        value = chnode.additional_info
-
-        if value.startswith(("0b", "0B", "0d", "0D")):
-            value = value[2:]
-
-        if chnode.symbol == "BINARY_INTEGER_LITERAL":
-            base = 2
-        elif chnode.symbol == "OCTAL_INTEGER_LITERAL":
-            base = 8
-        elif chnode.symbol == "DECIMAL_INTEGER_LITERAL":
-            base = 10
-        elif chnode.symbol == "HEX_INTEGER_LITERAL":
-            base = 16
-        else:
-            raise ValueError
-
-        return int(value, base)
-
     def visit_string_literal(self, node):
-        chnode = node.children[0]
-        value = chnode.additional_info[1:-1]
+        string, = node.children
+        value = string.additional_info[1:-1]
 
-        if chnode.symbol == "SINGLE_QUOTED_STRING":
+        if string.symbol == "SINGLE_QUOTED_STRING":
             return SingleQString(value)
-        return DoubleQString(value)
+        elif string.symbol == "DOUBLE_QUOTED_STRING":
+            return DoubleQString(value)
+        raise NotImplementedError
 
     def visit_equality_expression(self, node):
         left, op, right = node.children
-        op = op.children[0].additional_info
-        return BinOp(
-            self.visit_literal(left), op, self.visit_expression(right)
-        )
+        return BinOp(self.visit(left), op.additional_info, self.visit(right))
 
 
 transformer = Transformer()
@@ -173,4 +150,5 @@ def parse(source, transformer=transformer):
 
     """
 
-    return transformer.visit_program(_parse(source))
+    ast = ToAST().transform(_parse(source))
+    return transformer.visit_program(ast)

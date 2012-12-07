@@ -1,14 +1,25 @@
-IGNORE : "[ \t\n]";
+IGNORE : "([ \f\t\n]*)";
 
 # 10.1
-program : statement* [EOF];
+program : >statements?< [EOF];
+
+# XXX: Don't know why the first separator is needed here to ignore newlines
+statements : [separator]* statement ([separator]+ statement)* [separator]*
+           ;
+
+separator : ";" 
+          | "\n"
+          ;
 
 # 12.1
-statement  : expression
-           | assignment_statement
+statement  : <expression_statement>
+           | <assignment_statement>
            ;
 
 # 11.5.1
+expression_statement : expression
+                     ;
+
 expression : <equality_expression>
            | <literal>
            ;
@@ -24,26 +35,25 @@ BINOP      : "(==)"
 # 8.7.6
 literal : <numeric_literal>
         | <string_literal>
+        | <boolean_literal>
         ;
 
 # 8.7.6.2
-numeric_literal : <signed_number>
-                | <unsigned_number>
+numeric_literal : ADDOP* unsigned_number
                 ;
 
-ADDOP: "[+-]";
+ADDOP : "[+-]";
 
-signed_number: ADDOP unsigned_number;
+unsigned_number : <integer_literal>
+                ;
 
-unsigned_number: <integer_literal>;
-
-integer_literal: <DECIMAL_INTEGER_LITERAL>
-               | <BINARY_INTEGER_LITERAL>
-               | <OCTAL_INTEGER_LITERAL>
-               | <HEX_INTEGER_LITERAL>
+integer_literal: DECIMAL_INTEGER_LITERAL
+               | BINARY_INTEGER_LITERAL
+               | OCTAL_INTEGER_LITERAL
+               | HEX_INTEGER_LITERAL
                ;
 
-DECIMAL_INTEGER_LITERAL: "(0[dD])?[0-9]*";
+DECIMAL_INTEGER_LITERAL: "(0[dD])?[1-9][0-9]*";
 
 BINARY_INTEGER_LITERAL: "0[bB][01]+";
 
@@ -52,13 +62,16 @@ OCTAL_INTEGER_LITERAL: "(0[_oO0])?[0-7]*";
 HEX_INTEGER_LITERAL: "0[xX][0-9a-fA-F]+";
 
 # 8.7.6.3
-string_literal : <SINGLE_QUOTED_STRING>
-               | <DOUBLE_QUOTED_STRING>
+string_literal : SINGLE_QUOTED_STRING
+               | DOUBLE_QUOTED_STRING
                ;
 
 SINGLE_QUOTED_STRING : "'.*'";
 
 DOUBLE_QUOTED_STRING : "\".*\"";
+
+# 11.5.4.8
+boolean_literal : "true" | "false";
 
 # 11.4.2
 assignment : assignment_expression
