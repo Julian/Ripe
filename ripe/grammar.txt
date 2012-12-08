@@ -21,6 +21,8 @@ expression_statement : expression
                      ;
 
 expression : <equality_expression>
+           | <while_expression>
+           | <until_expression>
            | <variable>
            | <literal>
            ;
@@ -112,6 +114,16 @@ operator_expression : assignment_expression
 variable : IDENTIFIER
          | PSEUDO_VARIABLE
          ;
+
+# 11.5.2.3.2
+while_expression : ["while"] expression do_clause ["end"];
+
+do_clause : separator >statements?<
+          | ["do"] >statements?<
+          ;
+
+# 11.5.2.3.3
+until_expression : ["until"] expression do_clause ["end"];
 
 # 11.5.4.8.1
 PSEUDO_VARIABLE : "(nil)|(true)|(false)|(self)";

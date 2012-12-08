@@ -76,6 +76,18 @@ class DoubleQString(Node):
         self.value = value
 
 
+class While(Node):
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = list(body)
+
+
+class Until(Node):
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = list(body)
+
+
 class Transformer(object):
     def visit(self, node):
         return getattr(self, "visit_%s" % node.symbol)(node)
@@ -83,11 +95,11 @@ class Transformer(object):
     def visit_program(self, node):
         if not node.children:
             return Program()
+        statements, = node.children
+        return Program(self.visit(statements))
 
-        statements_node, = node.children
-        statements = statements_node.children
-
-        return Program(self.visit(statement) for statement in statements)
+    def visit_statements(self, node):
+        return (self.visit(statement) for statement in node.children)
 
     def visit_expression_statement(self, node):
         expression, = node.children
@@ -143,6 +155,16 @@ class Transformer(object):
     def visit_equality_expression(self, node):
         left, op, right = node.children
         return BinOp(self.visit(left), op.additional_info, self.visit(right))
+
+    def visit_while_expression(self, node):
+        condition, do = node.children
+        body, = do.children
+        return While(self.visit(condition), self.visit(body))
+
+    def visit_until_expression(self, node):
+        condition, do = node.children
+        body, = do.children
+        return Until(self.visit(condition), self.visit(body))
 
 
 transformer = Transformer()
