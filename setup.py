@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-from ruby import __version__
+from ripe import __version__
 
 
 with open("README.rst") as readme:
@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 setup(
-    name="ruby",
+    name="ripe",
     version=__version__,
     packages=find_packages(),
     author="Julian Berman",
@@ -33,6 +33,6 @@ setup(
     description="",
     license="MIT/X",
     long_description=long_description,
-    url="http://github.com/Julian/lang-ruby",
-    entry_points={"console_scripts" : ["ruby = ruby.cmdline:main"]},
+    url="http://github.com/Julian/Ripe",
+    entry_points={"console_scripts" : ["ripe = ripe.cmdline:main"]},
 )

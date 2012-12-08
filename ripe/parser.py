@@ -1,9 +1,9 @@
 import py
 from pypy.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
 
-from ruby import rubydir
+from ripe import ripedir
 
-grammar = py.path.local(rubydir).join("grammar.txt").read("rt")
+grammar = py.path.local(ripedir).join("grammar.txt").read("rt")
 regexs, rules, ToAST = parse_ebnf(grammar)
 _parse = make_parse_function(regexs, rules, eof=True)
 

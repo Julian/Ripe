@@ -4,8 +4,8 @@ from unittest import TestCase
 from pypy.rlib.parsing.parsing import ParseError
 from pypy.rlib.parsing.deterministic import LexerError
 
-from ruby import parser
-from ruby.parser import (
+from ripe import parser
+from ripe.parser import (
     Assign,
     Bool,
     BinOp,
