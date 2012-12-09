@@ -105,11 +105,25 @@ class If(Node):
         self.condition = condition
         self.body = body
 
+    def compile(self, context):
+        self.condition.compile(context)
+        context.emit(compiler.JUMP_IF_FALSE, 0)
+        jmp_pos = context.current_pos - 1
+        self.body.compile(context)
+        context.data[jmp_pos][1] = context.current_pos
+
 
 class Unless(Node):
     def __init__(self, condition, body):
         self.condition = condition
         self.body = body
+
+    def compile(self, context):
+        self.condition.compile(context)
+        context.emit(compiler.JUMP_IF_TRUE, 0)
+        jmp_pos = context.current_pos - 1
+        self.body.compile(context)
+        context.data[jmp_pos][1] = context.current_pos
 
 
 class While(Node):

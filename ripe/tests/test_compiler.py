@@ -95,3 +95,37 @@ class TestCompiler(TestCase, CompilerTestMixin):
             RETURN 0
             """
         )
+
+    def test_if(self):
+        self.assertCompiles(
+            """
+            if a
+                1
+            end
+            """,
+            """
+            LOAD_VARIABLE 0
+            JUMP_IF_FALSE 4
+            LOAD_CONSTANT 0
+            DISCARD_TOP 0
+            DISCARD_TOP 0
+            RETURN 0
+            """
+        )
+
+    def test_unless(self):
+        self.assertCompiles(
+            """
+            unless a
+                1
+            end
+            """,
+            """
+            LOAD_VARIABLE 0
+            JUMP_IF_TRUE 4
+            LOAD_CONSTANT 0
+            DISCARD_TOP 0
+            DISCARD_TOP 0
+            RETURN 0
+            """
+        )
