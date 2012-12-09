@@ -56,12 +56,22 @@ class Variable(Node):
     def __init__(self, name):
         self.name = name
 
+    def compile(self, context):
+        context.emit(
+            compiler.LOAD_VARIABLE, context.register_variable(self.name),
+        )
+
 
 class BinOp(Node):
     def __init__(self, left, op, right):
         self.left = left
         self.op = op
         self.right = right
+
+    def compile(self, context):
+        self.left.compile(context)
+        self.right.compile(context)
+        context.emit(compiler.BINOP[self.op])
 
 
 class Int(Node):

@@ -30,6 +30,7 @@ expression : <equality_expression>
            ;
 
 equality_expression : literal binary_op expression
+                    | variable binary_op expression
                     ;
 
 binary_op  : <BINOP> | <ADDOP>;

@@ -146,8 +146,11 @@ class TestBinOp(TestCase, ParserTestMixin):
     def test_subtract_ints(self):
         self.assertParses("1 - 0b101", BinOp(Int(1), "-", Int(0b101)))
 
-    # def test_add_int_to_var(self):
-    #     self.assertParses("1 - foo", BinOp(Int(1), "-", Variable("foo")))
+    def test_add_int_and_var(self):
+        self.assertParses("foo + 1", BinOp(Variable("foo"), "+", Int(1)))
+
+    def test_subtract_int_and_var(self):
+        self.assertParses("1 - foo", BinOp(Int(1), "-", Variable("foo")))
 
 
 class TestConditional(TestCase, ParserTestMixin):

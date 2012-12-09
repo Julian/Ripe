@@ -24,3 +24,15 @@ class TestCompiler(TestCase, CompilerTestMixin):
             RETURN 0
             """
         )
+
+    def test_add(self):
+        self.assertCompiles(
+            "a + 1",
+            """
+            LOAD_VARIABLE 0
+            LOAD_CONSTANT 0
+            BINARY_ADD 0
+            DISCARD_TOP 0
+            RETURN 0
+            """
+        )
