@@ -1,4 +1,4 @@
-IGNORE : "([ \f\t\n]*)";
+IGNORE : "([ \f\t]*)";
 
 # 10.1
 program : >statements?< [EOF];
@@ -21,6 +21,8 @@ expression_statement : expression
                      ;
 
 expression : <equality_expression>
+           | <if_expression>
+           | <unless_expression>
            | <while_expression>
            | <until_expression>
            | <variable>
@@ -115,10 +117,28 @@ variable : IDENTIFIER
          | PSEUDO_VARIABLE
          ;
 
+# 11.5.2.2.2
+if_expression : ["if"] expression then_clause elsif_clause* else_clause? ["end"]
+              ;
+
+then_clause : [separator] >statements?<
+            | [separator]? ["then"] >statements?<
+            ;
+
+else_clause : ["else"] >statements?<
+            ;
+
+elsif_clause : ["elsif"] expression then_clause
+             ;
+
+# 11.5.2.2.3
+unless_expression : ["unless"] expression then_clause else_clause? ["end"]
+                  ;
+
 # 11.5.2.3.2
 while_expression : ["while"] expression do_clause ["end"];
 
-do_clause : separator >statements?<
+do_clause : [separator] >statements?<
           | ["do"] >statements?<
           ;
 

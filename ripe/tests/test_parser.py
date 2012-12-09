@@ -11,8 +11,10 @@ from ripe.parser import (
     BinOp,
     DoubleQString,
     Expression,
+    If,
     Int,
     Program,
+    Unless,
     Until,
     Variable,
     While,
@@ -146,6 +148,33 @@ class TestBinOp(TestCase, ParserTestMixin):
 
     # def test_add_int_to_var(self):
     #     self.assertParses("1 - foo", BinOp(Int(1), "-", Variable("foo")))
+
+
+class TestConditional(TestCase, ParserTestMixin):
+
+    surround = Expression
+
+    def test_if(self):
+        source = dedent("""
+        if 1
+            i = 2
+        end
+        """)
+
+        self.assertParses(
+            source, If(Int(1), [Assign(Variable("i"), Int(2))])
+        )
+
+    def test_unless(self):
+        source = dedent("""
+        unless 1
+            i = 2
+        end
+        """)
+
+        self.assertParses(
+            source, Unless(Int(1), [Assign(Variable("i"), Int(2))])
+        )
 
 
 class TestLoops(TestCase, ParserTestMixin):

@@ -76,6 +76,18 @@ class DoubleQString(Node):
         self.value = value
 
 
+class If(Node):
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = list(body)
+
+
+class Unless(Node):
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = list(body)
+
+
 class While(Node):
     def __init__(self, condition, body):
         self.condition = condition
@@ -155,6 +167,16 @@ class Transformer(object):
     def visit_equality_expression(self, node):
         left, op, right = node.children
         return BinOp(self.visit(left), op.additional_info, self.visit(right))
+
+    def visit_if_expression(self, node):
+        condition, then = node.children
+        body, = then.children
+        return If(self.visit(condition), self.visit(body))
+
+    def visit_unless_expression(self, node):
+        condition, then = node.children
+        body, = then.children
+        return Unless(self.visit(condition), self.visit(body))
 
     def visit_while_expression(self, node):
         condition, do = node.children
