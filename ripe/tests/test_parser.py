@@ -8,11 +8,11 @@ from ripe import parser
 from ripe.parser import (
     Assign,
     BinOp,
+    Compound,
     DoubleQString,
     Expression,
     If,
     Int,
-    Program,
     Unless,
     Until,
     Variable,
@@ -35,13 +35,13 @@ class ParserTestMixin(object):
 
         self.assertEqual(
             parser.parse(source),
-            Program(self.surround(value) for value in statement_nodes)
+            Compound(self.surround(value) for value in statement_nodes)
         )
 
 
 class TestEmpty(TestCase):
     def test_empty_program(self):
-        self.assertEqual(parser.parse(""), Program())
+        self.assertEqual(parser.parse(""), Compound())
 
 
 class TestInteger(TestCase, ParserTestMixin):
@@ -164,7 +164,7 @@ class TestConditional(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, If(Int(1), [Assign(Variable("i"), Int(2))])
+            source, If(Int(1), Compound([Assign(Variable("i"), Int(2))]))
         )
 
     def test_unless(self):
@@ -175,7 +175,7 @@ class TestConditional(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, Unless(Int(1), [Assign(Variable("i"), Int(2))])
+            source, Unless(Int(1), Compound([Assign(Variable("i"), Int(2))]))
         )
 
 
@@ -191,7 +191,7 @@ class TestLoops(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, While(Int(1), [Assign(Variable("i"), Int(2))])
+            source, While(Int(1), Compound([Assign(Variable("i"), Int(2))]))
         )
 
     def test_until(self):
@@ -202,5 +202,5 @@ class TestLoops(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, Until(Int(1), [Assign(Variable("i"), Int(2))])
+            source, Until(Int(1), Compound([Assign(Variable("i"), Int(2))]))
         )

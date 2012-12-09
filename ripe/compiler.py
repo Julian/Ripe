@@ -4,6 +4,7 @@ bytecodes = [
     "RETURN",
     "ASSIGN",
     "DISCARD_TOP",
+    "JUMP_IF_TRUE",
     "JUMP_IF_FALSE",
     "JUMP_BACKWARD",
     "BINARY_ADD",
@@ -24,8 +25,12 @@ class CompilerContext(object):
         self.names = []
         self.name_indices = {}
 
+    @property
+    def current_pos(self):
+        return len(self.data)
+
     def emit(self, bytecode, arg=0):
-        self.data.append((bytecode, arg))
+        self.data.append([bytecode, arg])
 
     def register_constant(self, constant):
         self.constants.append(constant)

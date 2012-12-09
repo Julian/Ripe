@@ -28,7 +28,7 @@ class Node(object):
         return "<%s %s>" % (self.__class__.__name__, ", ".join(contents))
 
 
-class Program(Node):
+class Compound(Node):
     def __init__(self, statements=()):
         self.statements = list(statements)
 
@@ -103,36 +103,63 @@ class DoubleQString(Node, ConstantMixin):
 class If(Node):
     def __init__(self, condition, body):
         self.condition = condition
-        self.body = list(body)
+        self.body = body
 
 
 class Unless(Node):
     def __init__(self, condition, body):
         self.condition = condition
-        self.body = list(body)
+        self.body = body
 
 
 class While(Node):
     def __init__(self, condition, body):
         self.condition = condition
-        self.body = list(body)
+        self.body = body
+
+    def compile(self, context):
+        start_pos = context.current_pos
+        self.condition.compile(context)
+        context.emit(compiler.JUMP_IF_FALSE, 0)
+        jmp_pos = context.current_pos - 1
+        self.body.compile(context)
+        context.emit(compiler.JUMP_BACKWARD, start_pos)
+        context.data[jmp_pos][1] = context.current_pos
 
 
 class Until(Node):
     def __init__(self, condition, body):
         self.condition = condition
-        self.body = list(body)
+        self.body = body
+
+    def compile(self, context):
+        start_pos = context.current_pos
+        self.condition.compile(context)
+        context.emit(compiler.JUMP_IF_TRUE, 0)
+        jmp_pos = context.current_pos - 1
+        self.body.compile(context)
+        context.emit(compiler.JUMP_BACKWARD, start_pos)
+        context.data[jmp_pos][1] = context.current_pos
 
 
 class Transformer(object):
     def visit(self, node):
         return getattr(self, "visit_%s" % node.symbol)(node)
 
+    def compile(self, context):
+        start_pos = context.current_pos
+        self.condition.compile(context)
+        context.emit(compiler.JUMP_IF_FALSE, 0)
+        jmp_pos = context.current_pos - 1
+        self.body.compile(context)
+        context.emit(compiler.JUMP_BACKWARD, start_pos)
+        context.data[jmp_pos][1] = context.current_pos
+
     def visit_program(self, node):
         if not node.children:
-            return Program()
+            return Compound()
         statements, = node.children
-        return Program(self.visit(statements))
+        return Compound(self.visit(statements))
 
     def visit_statements(self, node):
         return (self.visit(statement) for statement in node.children)
@@ -195,22 +222,22 @@ class Transformer(object):
     def visit_if_expression(self, node):
         condition, then = node.children
         body, = then.children
-        return If(self.visit(condition), self.visit(body))
+        return If(self.visit(condition), Compound(self.visit(body)))
 
     def visit_unless_expression(self, node):
         condition, then = node.children
         body, = then.children
-        return Unless(self.visit(condition), self.visit(body))
+        return Unless(self.visit(condition), Compound(self.visit(body)))
 
     def visit_while_expression(self, node):
         condition, do = node.children
         body, = do.children
-        return While(self.visit(condition), self.visit(body))
+        return While(self.visit(condition), Compound(self.visit(body)))
 
     def visit_until_expression(self, node):
         condition, do = node.children
         body, = do.children
-        return Until(self.visit(condition), self.visit(body))
+        return Until(self.visit(condition), Compound(self.visit(body)))
 
 
 transformer = Transformer()
