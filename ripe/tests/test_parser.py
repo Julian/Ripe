@@ -7,7 +7,6 @@ from pypy.rlib.parsing.deterministic import LexerError
 from ripe import parser
 from ripe.parser import (
     Assign,
-    Bool,
     BinOp,
     DoubleQString,
     Expression,
