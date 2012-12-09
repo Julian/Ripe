@@ -1,7 +1,7 @@
 import py
 from pypy.rlib.parsing.ebnfparse import parse_ebnf, make_parse_function
 
-from ripe import ripedir
+from ripe import compiler, ripedir
 
 grammar = py.path.local(ripedir).join("grammar.txt").read("rt")
 regexs, rules, ToAST = parse_ebnf(grammar)
@@ -32,10 +32,18 @@ class Program(Node):
     def __init__(self, statements=()):
         self.statements = list(statements)
 
+    def compile(self, context):
+        for statement in self.statements:
+            statement.compile(context)
+
 
 class Expression(Node):
     def __init__(self, expr):
         self.expr = expr
+
+    def compile(self, context):
+        self.expr.compile(context)
+        context.emit(compiler.DISCARD_TOP)
 
 
 class Assign(Node):
@@ -59,6 +67,11 @@ class BinOp(Node):
 class Int(Node):
     def __init__(self, value):
         self.value = value
+
+    def compile(self, context):
+        context.emit(
+            compiler.LOAD_CONSTANT, context.register_constant(self.value),
+        )
 
 
 class Bool(Node):
