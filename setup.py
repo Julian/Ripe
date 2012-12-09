@@ -35,4 +35,8 @@ setup(
     long_description=long_description,
     url="http://github.com/Julian/Ripe",
     entry_points={"console_scripts" : ["ripe = ripe.cmdline:main"]},
+    install_requires=["rply"],
+    dependency_links = [
+        "https://github.com/alex/rply/archive/master.tar.gz#egg=rply-dev",
+    ],
 )
