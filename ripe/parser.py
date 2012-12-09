@@ -78,7 +78,7 @@ class BinOp(Node):
         context.emit(compiler.BINOP[self.op])
 
 
-class Int(Node):
+class ConstantMixin(object):
     def __init__(self, value):
         self.value = value
 
@@ -88,14 +88,16 @@ class Int(Node):
         )
 
 
-class SingleQString(Node):
-    def __init__(self, value):
-        self.value = value
+class Int(Node, ConstantMixin):
+    pass
 
 
-class DoubleQString(Node):
-    def __init__(self, value):
-        self.value = value
+class SingleQString(Node, ConstantMixin):
+    pass
+
+
+class DoubleQString(Node, ConstantMixin):
+    pass
 
 
 class If(Node):
