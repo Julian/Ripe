@@ -34,7 +34,6 @@ class CompilerContext(object):
     def register_variable(self, name):
         if name in self.name_indices:
             return self.name_indices[name]
-
         self.names.append(name)
         return self.name_indices.setdefault(name, len(self.names) - 1)
 

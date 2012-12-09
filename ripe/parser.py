@@ -47,9 +47,13 @@ class Expression(Node):
 
 
 class Assign(Node):
-    def __init__(self, name, obj):
+    def __init__(self, name, expr):
         self.name = name
-        self.obj = obj
+        self.expr = expr
+
+    def compile(self, context):
+        self.expr.compile(context)
+        context.emit(compiler.ASSIGN, context.register_variable(self.name))
 
 
 class Variable(Node):
