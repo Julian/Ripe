@@ -110,7 +110,7 @@ class If(Node):
         context.emit(compiler.JUMP_IF_FALSE, 0)
         jmp_pos = context.current_pos - 1
         self.body.compile(context)
-        context.data[jmp_pos][1] = context.current_pos
+        context.data[jmp_pos] = chr(context.current_pos)
 
 
 class Unless(Node):
@@ -123,7 +123,7 @@ class Unless(Node):
         context.emit(compiler.JUMP_IF_TRUE, 0)
         jmp_pos = context.current_pos - 1
         self.body.compile(context)
-        context.data[jmp_pos][1] = context.current_pos
+        context.data[jmp_pos] = chr(context.current_pos)
 
 
 class While(Node):
@@ -138,7 +138,7 @@ class While(Node):
         jmp_pos = context.current_pos - 1
         self.body.compile(context)
         context.emit(compiler.JUMP_BACKWARD, start_pos)
-        context.data[jmp_pos][1] = context.current_pos
+        context.data[jmp_pos] = chr(context.current_pos)
 
 
 class Until(Node):
@@ -153,7 +153,7 @@ class Until(Node):
         jmp_pos = context.current_pos - 1
         self.body.compile(context)
         context.emit(compiler.JUMP_BACKWARD, start_pos)
-        context.data[jmp_pos][1] = context.current_pos
+        context.data[jmp_pos] = chr(context.current_pos)
 
 
 class Transformer(object):
@@ -167,7 +167,7 @@ class Transformer(object):
         jmp_pos = context.current_pos - 1
         self.body.compile(context)
         context.emit(compiler.JUMP_BACKWARD, start_pos)
-        context.data[jmp_pos][1] = context.current_pos
+        context.data[jmp_pos] = chr(context.current_pos)
 
     def visit_program(self, node):
         if not node.children:

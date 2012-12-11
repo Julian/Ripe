@@ -69,7 +69,7 @@ class TestCompiler(TestCase, CompilerTestMixin):
             """,
             """
             LOAD_CONSTANT 0
-            JUMP_IF_FALSE 5
+            JUMP_IF_FALSE 10
             LOAD_CONSTANT 1
             ASSIGN 0
             JUMP_BACKWARD 0
@@ -87,7 +87,7 @@ class TestCompiler(TestCase, CompilerTestMixin):
             """,
             """
             LOAD_CONSTANT 0
-            JUMP_IF_TRUE 5
+            JUMP_IF_TRUE 10
             LOAD_CONSTANT 1
             ASSIGN 0
             JUMP_BACKWARD 0
@@ -105,7 +105,7 @@ class TestCompiler(TestCase, CompilerTestMixin):
             """,
             """
             LOAD_VARIABLE 0
-            JUMP_IF_FALSE 4
+            JUMP_IF_FALSE 8
             LOAD_CONSTANT 0
             DISCARD_TOP 0
             DISCARD_TOP 0
@@ -122,7 +122,7 @@ class TestCompiler(TestCase, CompilerTestMixin):
             """,
             """
             LOAD_VARIABLE 0
-            JUMP_IF_TRUE 4
+            JUMP_IF_TRUE 8
             LOAD_CONSTANT 0
             DISCARD_TOP 0
             DISCARD_TOP 0

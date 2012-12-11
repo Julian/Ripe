@@ -30,7 +30,8 @@ class CompilerContext(object):
         return len(self.data)
 
     def emit(self, bytecode, arg=0):
-        self.data.append([bytecode, arg])
+        self.data.append(chr(bytecode))
+        self.data.append(chr(arg))
 
     def register_constant(self, constant):
         self.constants.append(constant)
@@ -53,9 +54,13 @@ class ByteCode(object):
         self.num_vars = num_vars
 
     def dump(self):
-        return "\n".join(
-            "%s %s" % (bytecodes[code], arg) for code, arg in self.code
-        )
+        lines = []
+        i = 0
+        for i in range(0, len(self.code), 2):
+            c = self.code[i]
+            c2 = self.code[i + 1]
+            lines.append(bytecodes[ord(c)] + " " + str(ord(c2)))
+        return "\n".join(lines)
 
 
 def compile_ast(ast_node):
