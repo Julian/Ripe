@@ -38,7 +38,7 @@ equality_expression : literal binary_op expression
 
 binary_op  : <BINOP> | <ADDOP>;
 
-BINOP      : "(==)"
+BINOP      : "([=!]=)"
            ;
 
 # 8.7.6

@@ -10,13 +10,16 @@ bytecodes = [
     "BINARY_ADD",
     "BINARY_SUB",
     "BINARY_EQ",
+    "BINARY_NEQ",
     "PUTS",  # XXX
 ]
 for i, bytecode in enumerate(bytecodes):
         globals()[bytecode] = i
 
 
-BINOP = {"+" : BINARY_ADD, "-" : BINARY_SUB, "==" : BINARY_EQ}
+BINOP = {
+    "+" : BINARY_ADD, "-" : BINARY_SUB, "==" : BINARY_EQ, "!=" : BINARY_NEQ
+}
 
 
 class CompilerContext(object):
@@ -25,10 +28,6 @@ class CompilerContext(object):
         self.constants = []
         self.names = []
         self.name_indices = {}
-
-    @property
-    def current_pos(self):
-        return len(self.data)
 
     def emit(self, bytecode, arg=0):
         self.data.append(chr(bytecode))

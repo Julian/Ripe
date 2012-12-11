@@ -119,9 +119,9 @@ class TestPseudoVariables(TestCase, ParserTestMixin):
         self.assertParses("self", Variable("self"))
 
 
-class TestAssignment(TestCase, ParserTestMixin):
+class TestAssign(TestCase, ParserTestMixin):
     def test_single_assignment(self):
-        self.assertParses("x = 12", Assign(Variable("x"), Int(12)))
+        self.assertParses("x = 12", Assign("x", Int(12)))
 
     def test_a_bunch_of_single_assignments(self):
         source = dedent("""
@@ -130,8 +130,8 @@ class TestAssignment(TestCase, ParserTestMixin):
         """)
         self.assertParses(
             source,
-            Assign(Variable("x"), Int(12)),
-            Assign(Variable("y"), SingleQString("foo"))
+            Assign("x", Int(12)),
+            Assign("y", SingleQString("foo"))
         )
 
 
@@ -164,7 +164,7 @@ class TestConditional(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, If(Int(1), Compound([Assign(Variable("i"), Int(2))]))
+            source, If(Int(1), Compound([Assign("i", Int(2))]))
         )
 
     def test_unless(self):
@@ -175,7 +175,7 @@ class TestConditional(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, Unless(Int(1), Compound([Assign(Variable("i"), Int(2))]))
+            source, Unless(Int(1), Compound([Assign("i", Int(2))]))
         )
 
 
@@ -191,7 +191,7 @@ class TestLoops(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, While(Int(1), Compound([Assign(Variable("i"), Int(2))]))
+            source, While(Int(1), Compound([Assign("i", Int(2))]))
         )
 
     def test_until(self):
@@ -202,5 +202,5 @@ class TestLoops(TestCase, ParserTestMixin):
         """)
 
         self.assertParses(
-            source, Until(Int(1), Compound([Assign(Variable("i"), Int(2))]))
+            source, Until(Int(1), Compound([Assign("i", Int(2))]))
         )

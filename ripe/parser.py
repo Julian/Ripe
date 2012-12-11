@@ -108,9 +108,9 @@ class If(Node):
     def compile(self, context):
         self.condition.compile(context)
         context.emit(compiler.JUMP_IF_FALSE, 0)
-        jmp_pos = context.current_pos - 1
+        jmp_pos = len(context.data) - 1
         self.body.compile(context)
-        context.data[jmp_pos] = chr(context.current_pos)
+        context.data[jmp_pos] = chr(len(context.data))
 
 
 class Unless(Node):
@@ -121,9 +121,9 @@ class Unless(Node):
     def compile(self, context):
         self.condition.compile(context)
         context.emit(compiler.JUMP_IF_TRUE, 0)
-        jmp_pos = context.current_pos - 1
+        jmp_pos = len(context.data) - 1
         self.body.compile(context)
-        context.data[jmp_pos] = chr(context.current_pos)
+        context.data[jmp_pos] = chr(len(context.data))
 
 
 class While(Node):
@@ -132,13 +132,13 @@ class While(Node):
         self.body = body
 
     def compile(self, context):
-        start_pos = context.current_pos
+        start_pos = len(context.data)
         self.condition.compile(context)
         context.emit(compiler.JUMP_IF_FALSE, 0)
-        jmp_pos = context.current_pos - 1
+        jmp_pos = len(context.data) - 1
         self.body.compile(context)
         context.emit(compiler.JUMP_BACKWARD, start_pos)
-        context.data[jmp_pos] = chr(context.current_pos)
+        context.data[jmp_pos] = chr(len(context.data))
 
 
 class Until(Node):
@@ -147,13 +147,13 @@ class Until(Node):
         self.body = body
 
     def compile(self, context):
-        start_pos = context.current_pos
+        start_pos = len(context.data)
         self.condition.compile(context)
         context.emit(compiler.JUMP_IF_TRUE, 0)
-        jmp_pos = context.current_pos - 1
+        jmp_pos = len(context.data) - 1
         self.body.compile(context)
         context.emit(compiler.JUMP_BACKWARD, start_pos)
-        context.data[jmp_pos] = chr(context.current_pos)
+        context.data[jmp_pos] = chr(len(context.data))
 
 
 class Puts(Node):
@@ -171,13 +171,13 @@ class Transformer(object):
         return getattr(self, "visit_%s" % node.symbol)(node)
 
     def compile(self, context):
-        start_pos = context.current_pos
+        start_pos = len(context.data)
         self.condition.compile(context)
         context.emit(compiler.JUMP_IF_FALSE, 0)
-        jmp_pos = context.current_pos - 1
+        jmp_pos = len(context.data) - 1
         self.body.compile(context)
         context.emit(compiler.JUMP_BACKWARD, start_pos)
-        context.data[jmp_pos] = chr(context.current_pos)
+        context.data[jmp_pos] = chr(len(context.data))
 
     def visit_program(self, node):
         if not node.children:
@@ -194,8 +194,9 @@ class Transformer(object):
 
     def visit_assignment_statement(self, node):
         variable, obj = node.children[0].children[0].children
+        variable, = variable.children
         obj, = obj.children
-        return Assign(self.visit(variable), self.visit(obj))
+        return Assign(variable.additional_info, self.visit(obj))
 
     def visit_numeric_literal(self, node):
         number = self.visit(node.children[-1])
