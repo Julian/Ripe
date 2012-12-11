@@ -156,6 +156,16 @@ class Until(Node):
         context.data[jmp_pos] = chr(context.current_pos)
 
 
+class Puts(Node):
+    # XXX
+    def __init__(self, expr):
+        self.expr = expr
+
+    def compile(self, context):
+        self.expr.compile(context)
+        context.emit(compiler.PUTS, 0)
+
+
 class Transformer(object):
     def visit(self, node):
         return getattr(self, "visit_%s" % node.symbol)(node)
@@ -252,6 +262,10 @@ class Transformer(object):
         condition, do = node.children
         body, = do.children
         return Until(self.visit(condition), Compound(self.visit(body)))
+
+    def visit_puts_statement(self, node):
+        # XXX
+        return Puts(self.visit(node.children[0]))
 
 
 transformer = Transformer()

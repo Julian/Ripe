@@ -10,6 +10,7 @@ bytecodes = [
     "BINARY_ADD",
     "BINARY_SUB",
     "BINARY_EQ",
+    "PUTS",  # XXX
 ]
 for i, bytecode in enumerate(bytecodes):
         globals()[bytecode] = i

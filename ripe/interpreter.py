@@ -40,6 +40,9 @@ def execute(frame, bc):
             right = frame.pop()
             left = frame.pop()
             frame.push(add(left, right))
+        elif c == compiler.PUTS:
+            # XXX
+            print frame.pop()
         else:
             assert False
 

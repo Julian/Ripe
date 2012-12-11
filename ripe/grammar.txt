@@ -14,7 +14,10 @@ separator : ";"
 # 12.1
 statement  : <assignment_statement>
            | <expression_statement>
+           | <puts_statement>  # XXX
            ;
+
+puts_statement : ["puts"] expression;
 
 # 11.5.1
 expression_statement : expression
