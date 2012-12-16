@@ -35,7 +35,7 @@ class ParserTestMixin(object):
 
         self.assertEqual(
             parser.parse(source),
-            Compound(self.surround(value) for value in statement_nodes)
+            Compound([self.surround(value) for value in statement_nodes])
         )
 
 
