@@ -32,6 +32,14 @@ class TestInterpreter(TestCase):
         """)
         self.assertEqual(self.stdout.getvalue(), "12\n")
 
+    def test_eq(self):
+        self.interpret("puts 1 == 1")
+        self.assertEqual(self.stdout.getvalue(), "true\n")
+
+    def test_neq(self):
+        self.interpret("puts 5 != 5")
+        self.assertEqual(self.stdout.getvalue(), "false\n")
+
     # def test_while(self):
     #     self.interpret("""
     #     i = 0
