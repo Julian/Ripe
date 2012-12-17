@@ -2,7 +2,7 @@ from pypy.rlib import jit
 
 from ripe import compiler
 from ripe.compiler import compile_ast
-from ripe.objects import W_Integer, boolean
+from ripe.objects import W_Integer, boolean, w_true, w_false, w_nil
 from ripe.parser import parse
 
 
@@ -69,7 +69,8 @@ def execute(frame, bc):
         elif c == compiler.JUMP_BACKWARD:
             pc = arg
         elif c == compiler.JUMP_IF_FALSE:
-            if not frame.pop():
+            if frame.pop() == w_false:
+                frame.push(w_nil)  # XXX: Does this belong here?
                 pc = arg
         elif c == compiler.PUTS:
             # XXX

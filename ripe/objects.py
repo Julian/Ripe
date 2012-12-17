@@ -22,16 +22,30 @@ class W_Integer(W_Object):
 
 
 class W_TrueClass(W_Object):
+    def __repr__(self):
+        return "<w_true>"
+
     def inspect(self):
         return "true"
 
 
 class W_FalseClass(W_Object):
+    def __repr__(self):
+        return "<w_false>"
+
     def inspect(self):
         return "false"
 
 
-w_true, w_false = W_TrueClass(), W_FalseClass()
+class W_NilClass(W_Object):
+    def __repr__(self):
+        return "<w_nil>"
+
+    def inspect(self):
+        return "nil"
+
+
+w_nil, w_true, w_false = W_NilClass(), W_TrueClass(), W_FalseClass()
 
 
 def boolean(value):
