@@ -3,6 +3,7 @@ from pypy.rlib.parsing.tree import RPythonVisitor
 import py
 
 from ripe import compiler, ripedir
+from ripe.objects import W_Integer
 
 grammar = py.path.local(ripedir).join("grammar.txt").read("rt")
 regexs, rules, ToAST = parse_ebnf(grammar)
@@ -90,9 +91,8 @@ class Int(Node):
         self.value = value
 
     def compile(self, context):
-        context.emit(
-            compiler.LOAD_CONSTANT, context.register_constant(self.value),
-        )
+        w_self = W_Integer(self.value)
+        context.emit(compiler.LOAD_CONSTANT, context.register_constant(w_self))
 
     def neg(self):
         return self.__class__(-self.value)

@@ -49,7 +49,7 @@ def execute(frame, bc):
         arg = ord(code[pc + 1])
         pc += 2
         if c == compiler.LOAD_CONSTANT:
-            frame.push(W_Integer(bc.constants[arg]))
+            frame.push(bc.constants[arg])
         elif c == compiler.DISCARD_TOP:
             frame.pop()
         elif c == compiler.RETURN:
