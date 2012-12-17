@@ -39,9 +39,19 @@ class ParserTestMixin(object):
         )
 
 
-class TestEmpty(TestCase):
+class TestEmpty(TestCase, ParserTestMixin):
     def test_empty_program(self):
-        self.assertEqual(parser.parse(""), Compound())
+        self.assertParses("")
+
+
+class TestComment(TestCase, ParserTestMixin):
+    def test_full_line(self):
+        self.assertParses("# foo bar\n")
+
+    def test_mid_line(self):
+        self.assertParses(
+            "a = 1  # foo bar\n", Assign("a", Int(1)),
+        )
 
 
 class TestInteger(TestCase, ParserTestMixin):
