@@ -174,6 +174,13 @@ class Puts(Node):
         context.emit(compiler.PUTS, 0)
 
 
+class Method(Node):
+    def __init__(self, name, params, body):
+        self.name = name
+        self.params = params
+        self.body = body
+
+
 class Transformer(RPythonVisitor):
     def dispatch(self, node):
         return getattr(self, "visit_%s" % node.symbol)(node)
@@ -262,6 +269,11 @@ class Transformer(RPythonVisitor):
     def visit_puts_statement(self, node):
         # XXX
         return Puts(self.dispatch(node.children[0]))
+
+    def visit_method_definition(self, node):
+        name, params, body = node.children
+        name, body = name.additional_info, self.dispatch(body)
+        return Method(name, params.children, body)
 
 
 transformer = Transformer()

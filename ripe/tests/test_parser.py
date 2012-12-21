@@ -13,6 +13,7 @@ from ripe.parser import (
     Expression,
     If,
     Int,
+    Method,
     Unless,
     Until,
     Variable,
@@ -213,4 +214,29 @@ class TestLoops(TestCase, ParserTestMixin):
 
         self.assertParses(
             source, Until(Int(1), Compound([Assign("i", Int(2))]))
+        )
+
+
+class TestMethodDefinition(TestCase, ParserTestMixin):
+
+    surround = Expression
+
+    # def test_empty_def(self):
+    #     source = dedent("""
+    #     def foo
+    #     end
+    #     """)
+
+    #     self.assertParses(source, Method("foo", [], Compound()))
+
+    def test_single_statement_def(self):
+        source = dedent("""
+        def foo
+            a = 12
+        end
+        """)
+
+        self.assertParses(
+            source,
+            Method("foo", [], Compound([Assign("a", Int(12))]))
         )

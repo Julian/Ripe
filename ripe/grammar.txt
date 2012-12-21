@@ -23,7 +23,8 @@ puts_statement : ["puts"] expression;
 expression_statement : expression
                      ;
 
-expression : <equality_expression>
+expression : <method_definition>
+           | <equality_expression>
            | <if_expression>
            | <unless_expression>
            | <while_expression>
@@ -151,6 +152,22 @@ until_expression : ["until"] expression do_clause ["end"];
 
 # 11.5.4.8.1
 PSEUDO_VARIABLE : "(nil)|(true)|(false)|(self)";
+
+# 13.3.1
+method_definition : ["def"] defined_method_name params >statements?< ["end"]
+                  ;
+
+defined_method_name : <method_name>
+                    ;
+
+method_name : <method_identifier>
+            ;
+
+method_identifier : <IDENTIFIER>
+                  ;
+
+params : [separator]
+       ;
 
 IDENTIFIER: "[a-zA-Z_$][a-zA-Z_0-9]*"
             ;
