@@ -118,7 +118,7 @@ method_invocation_without_parentheses : expression
 operator_expression : assignment_expression
                     ;
 
-variable : IDENTIFIER
+variable : "@"? IDENTIFIER
          | PSEUDO_VARIABLE
          ;
 

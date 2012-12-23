@@ -288,3 +288,11 @@ class TestMethodDefinition(TestCase, ParserTestMixin):
             source,
             Method("foo", [], Compound([Expression(Int(1))]))
         )
+
+
+class TestClass(TestCase, ParserTestMixin):
+
+    surround = Expression
+
+    def test_instance_variable(self):
+        self.assertParses("@foo", Variable("@foo"))

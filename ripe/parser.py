@@ -202,9 +202,9 @@ class Transformer(RPythonVisitor):
 
     def visit_assignment_statement(self, node):
         variable, obj = node.children[0].children[0].children
-        variable, = variable.children
+        variable = "".join(v.additional_info for v in variable.children)
         obj, = obj.children
-        return Assign(variable.additional_info, self.dispatch(obj))
+        return Assign(variable, self.dispatch(obj))
 
     def visit_numeric_literal(self, node):
         number = self.dispatch(node.children[-1])
@@ -237,8 +237,8 @@ class Transformer(RPythonVisitor):
         raise NotImplementedError
 
     def visit_variable(self, node):
-        name, = node.children
-        return Variable(name.additional_info)
+        name = "".join(v.additional_info for v in node.children)
+        return Variable(name)
 
     def visit_equality_expression(self, node):
         left, op, right = node.children
