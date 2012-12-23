@@ -271,9 +271,16 @@ class Transformer(RPythonVisitor):
         return Puts(self.dispatch(node.children[0]))
 
     def visit_method_definition(self, node):
-        name, params, body = node.children
+        name, params_node, body = node.children
         name, body = name.additional_info, self.dispatch(body)
-        return Method(name, params.children, body)
+
+        if params_node.children:
+            params_list, = params_node.children
+            params = [param.additional_info for param in params_list.children]
+        else:
+            params = []
+
+        return Method(name, params, body)
 
 
 transformer = Transformer()

@@ -229,7 +229,43 @@ class TestMethodDefinition(TestCase, ParserTestMixin):
 
     #     self.assertParses(source, Method("foo", [], Compound()))
 
-    def test_single_statement_def(self):
+    def test_def_with_single_arg(self):
+        source = dedent("""
+        def foo x
+            1
+        end
+        """)
+
+        self.assertParses(
+            source,
+            Method("foo", ["x"], Compound([Expression(Int(1))]))
+        )
+
+    def test_def_with_multiple_args(self):
+        source = dedent("""
+        def foo x, y
+            1
+        end
+        """)
+
+        self.assertParses(
+            source,
+            Method("foo", ["x", "y"], Compound([Expression(Int(1))]))
+        )
+
+    def test_def_with_parens(self):
+        source = dedent("""
+        def foo(x, y)
+            1
+        end
+        """)
+
+        self.assertParses(
+            source,
+            Method("foo", ["x", "y"], Compound([Expression(Int(1))]))
+        )
+
+    def test_no_args(self):
         source = dedent("""
         def foo
             a = 12
@@ -239,4 +275,16 @@ class TestMethodDefinition(TestCase, ParserTestMixin):
         self.assertParses(
             source,
             Method("foo", [], Compound([Assign("a", Int(12))]))
+        )
+
+    def test_def_with_empty_parens(self):
+        source = dedent("""
+        def foo()
+            1
+        end
+        """)
+
+        self.assertParses(
+            source,
+            Method("foo", [], Compound([Expression(Int(1))]))
         )
