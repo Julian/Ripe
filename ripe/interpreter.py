@@ -6,11 +6,6 @@ from ripe.objects import W_Integer, boolean, w_true, w_false, w_nil
 from ripe.parser import parse
 
 
-driver = jit.JitDriver(
-    greens=["pc", "code", "bc"], reds=["frame"], virtualizables=["frame"],
-)
-
-
 class Frame(object):
 
     _virtualizable2_ = ['value_stack[*]', 'value_stack_pos', 'vars[*]']
@@ -34,6 +29,18 @@ class Frame(object):
         v = self.value_stack[new_pos]
         self.value_stack_pos = new_pos
         return v
+
+
+def get_printable_location(pc, code, bc):
+    return "%s %s" % (compiler.bytecodes[ord(code[pc])], ord(code[pc + 1]))
+
+
+driver = jit.JitDriver(
+    greens=["pc", "code", "bc"],
+    reds=["frame"],
+    virtualizables=["frame"],
+    get_printable_location=get_printable_location,
+)
 
 
 def add(left, right):
